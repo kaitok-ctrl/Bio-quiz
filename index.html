@@ -1,1 +1,993 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>UniCamillus Biology Trainer</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: radial-gradient(circle at top, #020617, #000000);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      color: #e5e7eb;
+    }
+    .app {
+      width: 100%;
+      max-width: 900px;
+      background: #020617ee;
+      border-radius: 24px;
+      border: 1px solid #1f2937;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+      padding: 16px 16px 20px;
+    }
+    @media (min-width: 768px){
+      .app { padding: 20px 24px 24px; }
+    }
+    h1 { margin: 0 0 4px; font-size: 1.4rem; }
+    .sub { font-size: 0.8rem; color: #9ca3af; }
 
+    .top-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .pill-group {
+      display: inline-flex;
+      padding: 3px;
+      border-radius: 999px;
+      background: #020617;
+    }
+    .pill {
+      border-radius: 999px;
+      border: none;
+      background: transparent;
+      padding: 6px 10px;
+      font-size: 0.75rem;
+      color: #e5e7eb;
+    }
+    .pill.active {
+      background: #22c55e;
+      color: #020617;
+      font-weight: 600;
+    }
+
+    .screen { margin-top: 10px; display: none; }
+    .screen.active { display: block; }
+
+    .card {
+      background: #020617cc;
+      border-radius: 16px;
+      border: 1px solid #1f2937;
+      padding: 12px;
+      margin-bottom: 10px;
+    }
+
+    .btn {
+      border-radius: 999px;
+      border: none;
+      background: #22c55e;
+      color: #020617;
+      padding: 10px 14px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      width: 100%;
+      margin-top: 8px;
+    }
+    .btn.secondary {
+      background: #020617;
+      color: #e5e7eb;
+      border: 1px solid #374151;
+      font-weight: 500;
+    }
+    .btn:disabled {
+      background: #1f2937;
+      color: #6b7280;
+    }
+
+    .topic-box-title {
+      font-size: 0.8rem;
+      color: #9ca3af;
+      margin: 6px 0 4px;
+    }
+    .topic-buttons, .difficulty-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .topic-btn, .difficulty-btn {
+      border-radius: 999px;
+      border: 1px solid #374151;
+      background: #020617;
+      color: #e5e7eb;
+      font-size: 0.75rem;
+      padding: 5px 10px;
+    }
+    .topic-btn.active, .difficulty-btn.active {
+      background: #22c55e;
+      color: #020617;
+      border-color: #22c55e;
+      font-weight: 600;
+    }
+
+    .q-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      color: #9ca3af;
+      margin-bottom: 4px;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.7rem;
+      padding: 3px 8px;
+      border-radius: 999px;
+      border: 1px solid #22c55e66;
+      background: #22c55e22;
+      color: #6ee7b7;
+      margin-bottom: 4px;
+    }
+    .badge-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: #22c55e;
+    }
+    .q-text { font-size: 1rem; line-height: 1.5; }
+
+    .options {
+      margin-top: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .opt-btn {
+      border-radius: 14px;
+      border: 1px solid #1f2937;
+      background: #020617;
+      padding: 8px 10px;
+      font-size: 0.9rem;
+      display: flex;
+      gap: 6px;
+      align-items: flex-start;
+      text-align: left;
+    }
+    .opt-btn.correct {
+      border-color: #22c55e;
+      background: #22c55e22;
+      color: #bbf7d0;
+    }
+    .opt-btn.wrong {
+      border-color: #f97373;
+      background: #f9737322;
+      color: #fecaca;
+    }
+    .opt-btn.selected:not(.correct):not(.wrong) {
+      border-color: #22c55e;
+    }
+    .letter {
+      font-size: 0.7rem;
+      color: #9ca3af;
+      margin-top: 3px;
+      min-width: 16px;
+    }
+    .state-tag {
+      margin-left: auto;
+      font-size: 0.7rem;
+      opacity: 0.8;
+    }
+
+    .stats-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 6px;
+      font-size: 0.8rem;
+      color: #9ca3af;
+    }
+    .progress-outer {
+      margin-top: 8px;
+      height: 6px;
+      border-radius: 999px;
+      background: #020617;
+      overflow: hidden;
+    }
+    .progress-inner {
+      height: 100%;
+      width: 0%;
+      background: #22c55e;
+      transition: width 0.2s ease;
+    }
+
+    ul.review-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      max-height: 380px;
+      overflow-y: auto;
+    }
+    ul.review-list li {
+      margin-bottom: 10px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #111827;
+      font-size: 0.85rem;
+    }
+    .tag-wrong  { color:#fecaca; font-size:0.75rem; }
+    .tag-correct{ color:#bbf7d0; font-size:0.75rem; }
+    .tag-exp    { color:#9ca3af; font-size:0.75rem; margin-top:2px; }
+
+    .foot {
+      margin-top: 10px;
+      font-size: 0.7rem;
+      color: #6b7280;
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+  <div class="top-row">
+    <div>
+      <h1>UniCamillus Biology Trainer</h1>
+      <p class="sub" id="subtitle">
+        分野と難易度を選んで、10問ずつ生物（細胞・分子・遺伝子発現など）をトレーニングできます。
+      </p>
+    </div>
+    <div>
+      <div class="pill-group">
+        <button class="pill active" id="lang-ja">日本語</button>
+        <button class="pill" id="lang-en">English</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ホーム画面 -->
+  <div id="screen-home" class="screen active">
+    <div class="card">
+      <p id="home-text">
+        まず分野と難易度を選び、「10問テスト」を押してください。
+        選んだ範囲からランダムに10問出題されます。
+      </p>
+
+      <p class="topic-box-title" id="topic-title">分野を選択:</p>
+      <div id="topic-buttons" class="topic-buttons"></div>
+
+      <p class="topic-box-title" id="diff-title">難易度を選択:</p>
+      <div id="difficulty-buttons" class="difficulty-buttons"></div>
+
+      <div class="stats-row" id="last-session-row" style="display:none;">
+        <span id="last-score-text"></span>
+        <span id="last-date-text"></span>
+      </div>
+    </div>
+
+    <button class="btn" id="btn-start-main">選んだ条件で10問テスト</button>
+    <button class="btn secondary" id="btn-start-review" disabled>
+      復習モード（前回の間違えた問題）
+    </button>
+  </div>
+
+  <!-- クイズ画面 -->
+  <div id="screen-quiz" class="screen">
+    <div class="card">
+      <div class="q-header">
+        <span id="q-counter">Q 1 / 10</span>
+        <span id="q-topic"></span>
+      </div>
+      <div class="badge">
+        <span class="badge-dot"></span>
+        <span id="badge-text">レベル: 基礎</span>
+      </div>
+      <p class="q-text" id="q-text"></p>
+    </div>
+
+    <div class="card">
+      <div id="options" class="options"></div>
+
+      <button class="btn" id="btn-submit">回答する</button>
+      <button class="btn" id="btn-next" style="display:none;">次の問題へ</button>
+      <button class="btn secondary" id="btn-quit-home">
+        ホームに戻る（この回は破棄）
+      </button>
+
+      <div id="explanation-box" style="display:none; margin-top:8px; font-size:0.85rem;">
+        <strong id="exp-title">解説</strong>
+        <div id="exp-body"></div>
+      </div>
+
+      <div class="stats-row">
+        <span id="stat-correct">正解数: 0</span>
+        <span id="stat-accuracy">正答率: 0%</span>
+      </div>
+      <div class="progress-outer">
+        <div class="progress-inner" id="progress-bar"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 結果画面 -->
+  <div id="screen-result" class="screen">
+    <div class="card">
+      <h2 id="result-title" style="margin:0 0 4px; font-size:1.1rem;">結果</h2>
+      <p id="result-summary" style="margin:0 0 6px; font-size:0.9rem;"></p>
+      <div class="stats-row">
+        <span id="result-detail-1"></span>
+        <span id="result-detail-2"></span>
+      </div>
+    </div>
+
+    <div class="card" id="review-card" style="display:none;">
+      <p style="font-size:0.85rem; margin:0 0 6px;" id="review-title">
+        間違えた問題（解説つき）
+      </p>
+      <ul class="review-list" id="review-list"></ul>
+    </div>
+
+    <button class="btn" id="btn-restart-main">もう一度 10問テスト</button>
+    <button class="btn secondary" id="btn-restart-review" disabled>
+      間違えた問題だけで再テスト
+    </button>
+    <button class="btn secondary" id="btn-back-home">
+      ホームに戻る
+    </button>
+  </div>
+
+  <p class="foot" id="footer">
+    このアプリは UniCamillus 医学部レベルの生物学（細胞生物学・分子生物学）を想定した自習用ツールです。
+    成績データは端末内ローカルにのみ保存されます。
+  </p>
+</div>
+
+<script>
+  // ========= 状態 =========
+  let lang = "ja";
+  let selectedTopic = "all";     // all / cell / molecules / geneExp / protein / virus
+  let selectedLevel = "all";     // all / basic / intermediate
+  const TOTAL_PER_SESSION = 10;
+
+  let sessionQuestions = [];
+  let sessionAnswers = [];
+  let currentIndex = 0;
+  let score = 0;
+  let bestStreak = 0;
+  let currentStreak = 0;
+
+  // ========= テキスト類 =========
+  const TOPIC_DEFS = {
+    all:      { ja:"全分野",             en:"All topics" },
+    cell:     { ja:"細胞生物学",         en:"Cell biology" },
+    molecules:{ ja:"生体分子",           en:"Biomolecules" },
+    geneExp:  { ja:"遺伝子発現（DNA→RNA）", en:"Gene expression (DNA→RNA)" },
+    protein:  { ja:"翻訳とタンパク質",   en:"Translation & proteins" },
+    virus:    { ja:"ウイルス",           en:"Viruses" }
+  };
+
+  const LEVEL_DEFS = {
+    all:         { ja:"全レベル", en:"All levels" },
+    basic:       { ja:"基礎",     en:"Basic" },
+    intermediate:{ ja:"応用",     en:"Intermediate" }
+  };
+
+  const TEXT = {
+    subtitle:{
+      ja:"分野と難易度を選んで、10問ずつ生物（細胞・分子・遺伝子発現など）をトレーニングできます。",
+      en:"Choose topic and difficulty and practice biology in 10-question sessions."
+    },
+    homeText:{
+      ja:"まず分野と難易度を選び、「10問テスト」を押してください。選んだ範囲からランダムに10問出題されます。",
+      en:"Select topic and difficulty, then start a 10-question test from that pool."
+    },
+    topicTitle:{ ja:"分野を選択:", en:"Choose topic:" },
+    diffTitle:{ ja:"難易度を選択:", en:"Choose difficulty:" },
+    btnMain:{ ja:"選んだ条件で10問テスト", en:"Start 10-question test" },
+    btnReview:{ ja:"復習モード（前回の間違えた問題）", en:"Review mode (missed questions)" },
+    btnSubmit:{ ja:"回答する", en:"Submit answer" },
+    btnNext:{ ja:"次の問題へ", en:"Next question" },
+    btnQuitHome:{ ja:"ホームに戻る（この回は破棄）", en:"Back to home (discard this run)" },
+    expTitle:{ ja:"解説", en:"Explanation" },
+    statCorrect:{ ja:"正解数", en:"Correct" },
+    statAccuracy:{ ja:"正答率", en:"Accuracy" },
+    levelBasic:{ ja:"レベル: 基礎", en:"Level: Basic" },
+    levelInter:{ ja:"レベル: 応用", en:"Level: Intermediate" },
+    qCounter:{
+      ja:(i,t)=>`問題 ${i} / ${t}`,
+      en:(i,t)=>`Question ${i} / ${t}`
+    },
+    resultTitle:{ ja:"結果", en:"Result" },
+    resultSummary:{
+      ja:(s,p,t,l)=>`${TOPIC_DEFS[t].ja}・${LEVEL_DEFS[l].ja}：${TOTAL_PER_SESSION}問中 ${s} 問正解（${p}%）`,
+      en:(s,p,t,l)=>`${TOPIC_DEFS[t].en} / ${LEVEL_DEFS[l].en}: ${s} of ${TOTAL_PER_SESSION} correct (${p}%).`
+    },
+    resultDetail1:{
+      ja:(c)=>`連続正解のベスト: ${c}`,
+      en:(c)=>`Best correct streak: ${c}`
+    },
+    resultDetail2:{
+      ja:(w)=>`間違えた問題: ${w} 問`,
+      en:(w)=>`Number of missed questions: ${w}`
+    },
+    reviewTitle:{
+      ja:"間違えた問題（解説つき）",
+      en:"Missed questions (with explanations)"
+    },
+    tagYour:{ ja:"あなたの回答", en:"Your answer" },
+    tagCorrect:{ ja:"正解", en:"Correct answer" },
+    footer:{
+      ja:"このアプリは UniCamillus 医学部レベルの生物学（細胞生物学・分子生物学）を想定した自習用ツールです。成績は端末内ローカルに保存されます。",
+      en:"This app targets UniCamillus-level cell & molecular biology. Scores are stored only on this device."
+    },
+    correctLabel:{ ja:"正解", en:"Correct" },
+    wrongLabel:{ ja:"不正解", en:"Wrong" },
+    btnRestartMain:{ ja:"もう一度 10問テスト", en:"Take another 10-question test" },
+    btnRestartReview:{ ja:"間違えた問題だけで再テスト", en:"Retest missed questions only" },
+    btnBackHome:{ ja:"ホームに戻る", en:"Back to home" }
+  };
+
+  // ========= 生物の問題バンク =========
+  // topic: cell / molecules / geneExp / protein / virus
+  // level: basic / intermediate
+
+  const QUESTION_BANK = [
+    {
+      id:"cell-1",
+      topic:"cell",
+      level:"basic",
+      q:{
+        ja:"『細胞説』として正しい内容の組み合わせはどれ？",
+        en:"Which statement correctly belongs to the cell theory?"
+      },
+      choices:[
+        {ja:"全ての細胞は無生物から自然発生する", en:"All cells arise spontaneously from nonliving matter"},
+        {ja:"全ての生物は1個の巨大な細胞からできている", en:"All organisms consist of a single giant cell"},
+        {ja:"全ての生物は1個以上の細胞から成り、細胞が生命の基本単位である", en:"All organisms are composed of one or more cells and the cell is the basic unit of life"},
+        {ja:"遺伝情報はタンパク質にのみ保存される", en:"Genetic information is stored only in proteins"},
+        {ja:"細胞はエネルギーを利用しない", en:"Cells do not use energy"}
+      ],
+      correct:2,
+      exp:{
+        ja:"細胞説では「全ての生物は1個以上の細胞から成り，細胞が生命の構造的・機能的単位である」とされる。",
+        en:"Cell theory states that all organisms consist of one or more cells and that the cell is the structural and functional unit of life."
+      }
+    },
+    {
+      id:"cell-2",
+      topic:"cell",
+      level:"basic",
+      q:{
+        ja:"原核細胞と真核細胞の共通点として正しいのはどれ？",
+        en:"Which feature is common to both prokaryotic and eukaryotic cells?"
+      },
+      choices:[
+        {ja:"DNAは常に核膜で囲まれている", en:"DNA is always enclosed by a nuclear envelope"},
+        {ja:"ATPをエネルギー通貨として利用する", en:"They use ATP as an energy currency"},
+        {ja:"細胞骨格を全く持たない", en:"They lack any cytoskeleton"},
+        {ja:"リボソームを持たない", en:"They lack ribosomes"},
+        {ja:"細胞膜を持たない", en:"They lack a plasma membrane"}
+      ],
+      correct:1,
+      exp:{
+        ja:"原核・真核ともにATPをエネルギー通貨とし，細胞膜やリボソームなど多くの基本機能を共有している。",
+        en:"Both cell types use ATP as an energy currency and share basic components like plasma membrane and ribosomes."
+      }
+    },
+    {
+      id:"cell-3",
+      topic:"cell",
+      level:"intermediate",
+      q:{
+        ja:"細胞の大きさが制限される主な理由として最も適切なのはどれ？",
+        en:"What is the main reason why cells are typically small?"
+      },
+      choices:[
+        {ja:"小さいほど拡散が遅くなるから", en:"Because diffusion becomes slower in smaller volumes"},
+        {ja:"表面積/体積比が大きいほど物質交換に有利だから", en:"Because a high surface-area-to-volume ratio favors exchange of materials"},
+        {ja:"DNAの量が細胞径を直接決めるから", en:"Because the amount of DNA strictly sets cell size"},
+        {ja:"小さい細胞はATPを合成できないから", en:"Because small cells cannot make ATP"},
+        {ja:"細胞膜は伸びないため大きくできないから", en:"Because membranes cannot stretch at all"}
+      ],
+      correct:1,
+      exp:{
+        ja:"細胞が大きくなると表面積/体積比が低下し，栄養や老廃物の交換が非効率になるため，多くの細胞は小さなサイズを保つ。",
+        en:"If a cell becomes too large its surface-area-to-volume ratio decreases and exchange of materials becomes inefficient, so most cells remain small."
+      }
+    },
+    {
+      id:"mol-1",
+      topic:"molecules",
+      level:"basic",
+      q:{
+        ja:"生体分子の骨格として最も重要な元素はどれ？",
+        en:"Which element forms the main backbone of most biological molecules?"
+      },
+      choices:[
+        {ja:"ナトリウム", en:"Sodium"},
+        {ja:"カルシウム", en:"Calcium"},
+        {ja:"炭素", en:"Carbon"},
+        {ja:"塩素", en:"Chlorine"},
+        {ja:"マグネシウム", en:"Magnesium"}
+      ],
+      correct:2,
+      exp:{
+        ja:"炭素は4本の共有結合を作ることができ，多様な有機分子骨格を形成できる。",
+        en:"Carbon makes four covalent bonds and allows enormous diversity of organic backbones."
+      }
+    },
+    {
+      id:"mol-2",
+      topic:"molecules",
+      level:"basic",
+      q:{
+        ja:"リン脂質の特徴を説明した文として正しいのはどれ？",
+        en:"Which statement correctly describes a phospholipid?"
+      },
+      choices:[
+        {ja:"完全に疎水性である", en:"It is completely hydrophobic"},
+        {ja:"完全に親水性である", en:"It is completely hydrophilic"},
+        {ja:"1本の脂肪酸鎖のみを持つ", en:"It has only one fatty acid chain"},
+        {ja:"疎水性尾部と親水性頭部を併せ持つ両親媒性分子である", en:"It is amphipathic with hydrophobic tails and a hydrophilic head"},
+        {ja:"細胞膜には含まれない", en:"It is not present in cell membranes"}
+      ],
+      correct:3,
+      exp:{
+        ja:"リン脂質は疎水性の脂肪酸尾部と親水性のリン酸頭部を持つ両親媒性分子で，脂質二重層の基本構成要素である。",
+        en:"Phospholipids have hydrophobic fatty acid tails and a hydrophilic phosphate head, forming the basic structure of lipid bilayers."
+      }
+    },
+    {
+      id:"mol-3",
+      topic:"molecules",
+      level:"intermediate",
+      q:{
+        ja:"タンパク質の二次構造に含まれないものはどれ？",
+        en:"Which is NOT considered a protein secondary structure?"
+      },
+      choices:[
+        {ja:"αヘリックス", en:"α helix"},
+        {ja:"βシート", en:"β sheet"},
+        {ja:"ターン／ループ構造", en:"Turns/loops"},
+        {ja:"ペプチド結合", en:"Peptide bond"},
+        {ja:"ランダムコイル", en:"Random coil regions"}
+      ],
+      correct:3,
+      exp:{
+        ja:"ペプチド結合はアミノ酸同士をつなぐ一次構造の要素であり，二次構造そのものではない。",
+        en:"The peptide bond is part of the primary structure that links amino acids; it is not itself a secondary structure."
+      }
+    },
+    {
+      id:"gene-1",
+      topic:"geneExp",
+      level:"basic",
+      q:{
+        ja:"DNAからRNAが合成される過程を何と呼ぶ？",
+        en:"What is the process called in which RNA is synthesized from DNA?"
+      },
+      choices:[
+        {ja:"翻訳", en:"Translation"},
+        {ja:"複製", en:"Replication"},
+        {ja:"転写", en:"Transcription"},
+        {ja:"スプライシング", en:"Splicing"},
+        {ja:"フォールディング", en:"Folding"}
+      ],
+      correct:2,
+      exp:{
+        ja:"DNA鋳型からRNAポリメラーゼによってRNAを合成する過程は『転写』と呼ばれる。",
+        en:"The synthesis of RNA from a DNA template by RNA polymerase is called transcription."
+      }
+    },
+    {
+      id:"gene-2",
+      topic:"geneExp",
+      level:"intermediate",
+      q:{
+        ja:"真核生物に特徴的なmRNAの成熟過程に含まれないものはどれ？",
+        en:"Which step is NOT part of typical eukaryotic mRNA maturation?"
+      },
+      choices:[
+        {ja:"5' キャップ付加", en:"Addition of a 5' cap"},
+        {ja:"ポリアデニル化（poly(A) tail の付加）", en:"Polyadenylation (poly(A) tail)"},
+        {ja:"イントロンのスプライシング", en:"Splicing of introns"},
+        {ja:"メチル化されたtRNAへの結合", en:"Covalent binding to methylated tRNA"},
+        {ja:"一部の塩基の編集（RNA editing）", en:"RNA editing of some bases"}
+      ],
+      correct:3,
+      exp:{
+        ja:"mRNA成熟にtRNAへの共有結合は含まれない。tRNAは翻訳でアミノ酸を運ぶ別の分子である。",
+        en:"Binding to methylated tRNA is not part of mRNA maturation; tRNA is a separate molecule used in translation."
+      }
+    },
+    {
+      id:"prot-1",
+      topic:"protein",
+      level:"basic",
+      q:{
+        ja:"翻訳に直接関わる分子の組み合わせとして正しいのはどれ？",
+        en:"Which set of molecules acts directly in translation?"
+      },
+      choices:[
+        {ja:"DNA, RNAポリメラーゼ, ヒストン", en:"DNA, RNA polymerase, histones"},
+        {ja:"mRNA, tRNA, リボソーム", en:"mRNA, tRNA, ribosomes"},
+        {ja:"脂質, mRNA, ゴルジ体", en:"Lipids, mRNA, Golgi apparatus"},
+        {ja:"リソソーム, tRNA, DNA", en:"Lysosomes, tRNA, DNA"},
+        {ja:"ミトコンドリア, rRNA, DNAポリメラーゼ", en:"Mitochondria, rRNA, DNA polymerase"}
+      ],
+      correct:1,
+      exp:{
+        ja:"翻訳ではmRNA, アミノアシルtRNA, リボソームが協調してポリペプチド鎖を合成する。",
+        en:"Translation uses mRNA as template, aminoacyl-tRNAs, and ribosomes to synthesize a polypeptide."
+      }
+    },
+    {
+      id:"prot-2",
+      topic:"protein",
+      level:"intermediate",
+      q:{
+        ja:"タンパク質フォールディングに関して正しい記述はどれ？",
+        en:"Which statement about protein folding is correct?"
+      },
+      choices:[
+        {ja:"アミノ酸配列は構造と無関係である", en:"Amino acid sequence is unrelated to the final structure"},
+        {ja:"すべてのタンパク質は自発的に正しく折りたたまれるためシャペロンは不要である", en:"All proteins fold correctly without chaperones"},
+        {ja:"誤ったフォールディングは病気の原因になりうる", en:"Misfolded proteins can lead to disease"},
+        {ja:"フォールディングは細胞質では起こらない", en:"Folding never occurs in the cytosol"},
+        {ja:"タンパク質は常に完全にランダムな構造をとる", en:"Proteins always remain completely random in structure"}
+      ],
+      correct:2,
+      exp:{
+        ja:"プリオン病やアルツハイマー病など，多くの疾患で誤ったフォールディングや凝集が重要な要因となる。",
+        en:"In diseases such as prion diseases and Alzheimer's, protein misfolding and aggregation play key roles."
+      }
+    },
+    {
+      id:"virus-1",
+      topic:"virus",
+      level:"basic",
+      q:{
+        ja:"ウイルスの共通した特徴として正しいのはどれ？",
+        en:"Which feature is common to all viruses?"
+      },
+      choices:[
+        {ja:"自分自身でATPを大量に合成できる", en:"They can produce large amounts of ATP on their own"},
+        {ja:"細胞膜と細胞質を必ず持つ", en:"They always have plasma membrane and cytoplasm"},
+        {ja:"ゲノムとしてDNAかRNAのいずれかを持つ", en:"They have either DNA or RNA as their genome"},
+        {ja:"リボソームを持ちタンパク質合成を自律的に行う", en:"They have ribosomes for independent protein synthesis"},
+        {ja:"無生物との相互作用を持たない", en:"They have no interactions with nonliving matter"}
+      ],
+      correct:2,
+      exp:{
+        ja:"ウイルスはDNAまたはRNAをゲノムとして持つが，自前のリボソームやエネルギー産生系を欠き，宿主細胞に依存する。",
+        en:"Viruses contain either DNA or RNA as their genome but lack their own ribosomes and energy production, depending on host cells."
+      }
+    }
+  ];
+
+  // ========= 共通ユーティリティ =========
+  const screenHome   = document.getElementById("screen-home");
+  const screenQuiz   = document.getElementById("screen-quiz");
+  const screenResult = document.getElementById("screen-result");
+
+  const subtitle     = document.getElementById("subtitle");
+  const homeText     = document.getElementById("home-text");
+  const topicTitle   = document.getElementById("topic-title");
+  const diffTitle    = document.getElementById("diff-title");
+  const topicButtonsDiv = document.getElementById("topic-buttons");
+  const diffButtonsDiv  = document.getElementById("difficulty-buttons");
+
+  const btnStartMain   = document.getElementById("btn-start-main");
+  const btnStartReview = document.getElementById("btn-start-review");
+  const btnRestartMain = document.getElementById("btn-restart-main");
+  const btnRestartReview = document.getElementById("btn-restart-review");
+  const btnBackHome    = document.getElementById("btn-back-home");
+  const btnQuitHome    = document.getElementById("btn-quit-home");
+
+  const qCounter   = document.getElementById("q-counter");
+  const qTopic     = document.getElementById("q-topic");
+  const badgeText  = document.getElementById("badge-text");
+  const qText      = document.getElementById("q-text");
+  const optionsDiv = document.getElementById("options");
+  const btnSubmit  = document.getElementById("btn-submit");
+  const btnNext    = document.getElementById("btn-next");
+
+  const explanationBox = document.getElementById("explanation-box");
+  const expTitle       = document.getElementById("exp-title");
+  const expBody        = document.getElementById("exp-body");
+
+  const statCorrect = document.getElementById("stat-correct");
+  const statAccuracy= document.getElementById("stat-accuracy");
+  const progressBar = document.getElementById("progress-bar");
+
+  const resultTitle   = document.getElementById("result-title");
+  const resultSummary = document.getElementById("result-summary");
+  const resultDetail1 = document.getElementById("result-detail-1");
+  const resultDetail2 = document.getElementById("result-detail-2");
+  const reviewCard    = document.getElementById("review-card");
+  const reviewTitle   = document.getElementById("review-title");
+  const reviewList    = document.getElementById("review-list");
+
+  const lastSessionRow= document.getElementById("last-session-row");
+  const lastScoreText = document.getElementById("last-score-text");
+  const lastDateText  = document.getElementById("last-date-text");
+  const footer        = document.getElementById("footer");
+
+  function showScreen(name){
+    [screenHome,screenQuiz,screenResult].forEach(s=>s.classList.remove("active"));
+    if(name==="home") screenHome.classList.add("active");
+    if(name==="quiz") screenQuiz.classList.add("active");
+    if(name==="result") screenResult.classList.add("active");
+  }
+  function shuffle(arr){
+    const a=arr.slice();
+    for(let i=a.length-1;i>0;i--){
+      const j=Math.floor(Math.random()*(i+1));
+      [a[i],a[j]]=[a[j],a[i]];
+    }
+    return a;
+  }
+  function getStoredWrongIds(){
+    try{
+      const raw=localStorage.getItem("bio_last_wrong_ids");
+      if(!raw) return [];
+      const arr=JSON.parse(raw);
+      return Array.isArray(arr)?arr:[];
+    }catch{return [];}
+  }
+  function updateLastSession(){
+    const score = localStorage.getItem("bio_last_score");
+    const date  = localStorage.getItem("bio_last_date");
+    if(!score || !date){
+      lastSessionRow.style.display="none";
+      btnStartReview.disabled = !getStoredWrongIds().length;
+      return;
+    }
+    lastSessionRow.style.display="flex";
+    const d=new Date(date);
+    lastScoreText.textContent = (lang==="ja"?"前回のスコア: ":"Last score: ")+score+"%";
+    lastDateText.textContent  = (lang==="ja"?"実施日: ":"Date: ")+d.toLocaleString();
+    btnStartReview.disabled = !getStoredWrongIds().length;
+  }
+
+  function renderTopicButtons(){
+    topicButtonsDiv.innerHTML="";
+    Object.keys(TOPIC_DEFS).forEach(key=>{
+      const b=document.createElement("button");
+      b.className="topic-btn"+(key===selectedTopic?" active":"");
+      b.textContent=TOPIC_DEFS[key][lang];
+      b.onclick=()=>{selectedTopic=key;renderTopicButtons();};
+      topicButtonsDiv.appendChild(b);
+    });
+  }
+  function renderDiffButtons(){
+    diffButtonsDiv.innerHTML="";
+    Object.keys(LEVEL_DEFS).forEach(key=>{
+      const b=document.createElement("button");
+      b.className="difficulty-btn"+(key===selectedLevel?" active":"");
+      b.textContent=LEVEL_DEFS[key][lang];
+      b.onclick=()=>{selectedLevel=key;renderDiffButtons();};
+      diffButtonsDiv.appendChild(b);
+    });
+  }
+
+  function applyLanguage(){
+    subtitle.textContent   = TEXT.subtitle[lang];
+    homeText.textContent   = TEXT.homeText[lang];
+    topicTitle.textContent = TEXT.topicTitle[lang];
+    diffTitle.textContent  = TEXT.diffTitle[lang];
+    btnStartMain.textContent   = TEXT.btnMain[lang];
+    btnStartReview.textContent = TEXT.btnReview[lang];
+    btnSubmit.textContent      = TEXT.btnSubmit[lang];
+    btnNext.textContent        = TEXT.btnNext[lang];
+    btnQuitHome.textContent    = TEXT.btnQuitHome[lang];
+    btnRestartMain.textContent = TEXT.btnRestartMain[lang];
+    btnRestartReview.textContent = TEXT.btnRestartReview[lang];
+    btnBackHome.textContent    = TEXT.btnBackHome[lang];
+    reviewTitle.textContent    = TEXT.reviewTitle[lang];
+    footer.textContent         = TEXT.footer[lang];
+
+    document.getElementById("lang-ja").classList.toggle("active",lang==="ja");
+    document.getElementById("lang-en").classList.toggle("active",lang==="en");
+
+    renderTopicButtons();
+    renderDiffButtons();
+    updateLastSession();
+
+    if(screenQuiz.classList.contains("active")) renderQuestion();
+    if(screenResult.classList.contains("active")) renderResult();
+  }
+
+  document.getElementById("lang-ja").onclick=()=>{lang="ja";applyLanguage();};
+  document.getElementById("lang-en").onclick=()=>{lang="en";applyLanguage();};
+
+  // ========= セッション開始 =========
+  function startSession(mode){
+    let pool;
+    if(mode==="review"){
+      const ids=getStoredWrongIds();
+      pool=QUESTION_BANK.filter(q=>ids.includes(q.id));
+      if(!pool.length) pool=QUESTION_BANK;
+    } else {
+      pool=QUESTION_BANK.filter(q=>{
+        const topicOK = (selectedTopic==="all") || (q.topic===selectedTopic);
+        const levelOK = (selectedLevel==="all") || (q.level===selectedLevel);
+        return topicOK && levelOK;
+      });
+      if(!pool.length) pool=QUESTION_BANK;
+    }
+
+    sessionQuestions = shuffle(pool).slice(0,TOTAL_PER_SESSION);
+    sessionAnswers=[];
+    currentIndex=0;
+    score=0;
+    bestStreak=0;
+    currentStreak=0;
+
+    btnSubmit.style.display="block";
+    btnNext.style.display="none";
+    explanationBox.style.display="none";
+
+    showScreen("quiz");
+    renderQuestion();
+  }
+
+  // ========= 問題表示 =========
+  function renderQuestion(){
+    const q=sessionQuestions[currentIndex];
+    if(!q) return;
+    qCounter.textContent = TEXT.qCounter[lang](currentIndex+1,TOTAL_PER_SESSION);
+    qTopic.textContent   = TOPIC_DEFS[q.topic]?.[lang] || "";
+    badgeText.textContent = (q.level==="basic"?TEXT.levelBasic[lang]:TEXT.levelInter[lang]);
+    qText.textContent    = q.q[lang];
+
+    optionsDiv.innerHTML="";
+    q.choices.forEach((c,idx)=>{
+      const btn=document.createElement("button");
+      btn.className="opt-btn";
+      btn.dataset.index=idx;
+      const letter=document.createElement("span");
+      letter.className="letter";
+      letter.textContent=String.fromCharCode(65+idx)+".";
+      const txt=document.createElement("span");
+      txt.textContent=c[lang];
+      btn.appendChild(letter);btn.appendChild(txt);
+      btn.onclick=()=>{
+        if(btnSubmit.disabled) return;
+        Array.from(optionsDiv.children).forEach(b=>b.classList.remove("selected"));
+        btn.classList.add("selected");
+      };
+      optionsDiv.appendChild(btn);
+    });
+
+    explanationBox.style.display="none";
+    expBody.textContent="";
+
+    const prog=Math.round((currentIndex/TOTAL_PER_SESSION)*100);
+    progressBar.style.width=prog+"%";
+
+    statCorrect.textContent = TEXT.statCorrect[lang]+": "+score;
+    const acc=sessionAnswers.length?Math.round(score/sessionAnswers.length*100):0;
+    statAccuracy.textContent = TEXT.statAccuracy[lang]+": "+acc+"%";
+  }
+
+  // ========= 回答・次へ =========
+  btnSubmit.onclick=()=>{
+    const q=sessionQuestions[currentIndex];
+    const selected=Array.from(optionsDiv.children).find(b=>b.classList.contains("selected"));
+    if(!selected) return;
+    const chosen=Number(selected.dataset.index);
+    const isCorrect = chosen===q.correct;
+
+    if(isCorrect){score++;currentStreak++;if(currentStreak>bestStreak)bestStreak=currentStreak;}
+    else{currentStreak=0;}
+
+    sessionAnswers.push({index:currentIndex,chosen,correct:q.correct,id:q.id});
+
+    Array.from(optionsDiv.children).forEach((b,idx)=>{
+      b.onclick=null;
+      if(idx===q.correct) b.classList.add("correct");
+      if(idx===chosen && idx!==q.correct) b.classList.add("wrong");
+    });
+
+    const tag=document.createElement("span");
+    tag.className="state-tag";
+    tag.textContent=isCorrect?TEXT.correctLabel[lang]:TEXT.wrongLabel[lang];
+    selected.appendChild(tag);
+
+    explanationBox.style.display="block";
+    expTitle.textContent = TEXT.expTitle[lang];
+    expBody.textContent  = q.exp[lang];
+
+    statCorrect.textContent = TEXT.statCorrect[lang]+": "+score;
+    const acc=Math.round(score/sessionAnswers.length*100);
+    statAccuracy.textContent = TEXT.statAccuracy[lang]+": "+acc+"%";
+
+    btnSubmit.style.display="none";
+    btnNext.style.display="block";
+  };
+
+  btnNext.onclick=()=>{
+    if(currentIndex < TOTAL_PER_SESSION-1){
+      currentIndex++;
+      btnSubmit.style.display="block";
+      btnNext.style.display="none";
+      explanationBox.style.display="none";
+      renderQuestion();
+    }else{
+      finishSession();
+    }
+  };
+
+  // ========= 結果 =========
+  function finishSession(){
+    const percent=Math.round(score/TOTAL_PER_SESSION*100);
+    const wrong=TOTAL_PER_SESSION-score;
+
+    const wrongIds=sessionAnswers.filter(a=>a.chosen!==a.correct).map(a=>a.id);
+    localStorage.setItem("bio_last_wrong_ids",JSON.stringify(wrongIds));
+    localStorage.setItem("bio_last_score",String(percent));
+    localStorage.setItem("bio_last_date",new Date().toISOString());
+
+    renderResult();
+    showScreen("result");
+    updateLastSession();
+  }
+
+  function renderResult(){
+    const percent=Math.round(score/TOTAL_PER_SESSION*100);
+    const wrong=TOTAL_PER_SESSION-score;
+
+    resultTitle.textContent   = TEXT.resultTitle[lang];
+    resultSummary.textContent = TEXT.resultSummary[lang](score,percent,selectedTopic,selectedLevel);
+    resultDetail1.textContent = TEXT.resultDetail1[lang](bestStreak);
+    resultDetail2.textContent = TEXT.resultDetail2[lang](wrong);
+
+    reviewList.innerHTML="";
+    const missed=sessionAnswers.filter(a=>a.chosen!==a.correct);
+    if(missed.length){
+      reviewTitle.textContent = TEXT.reviewTitle[lang];
+      missed.forEach(m=>{
+        const q=sessionQuestions[m.index];
+        const li=document.createElement("li");
+        const qd=document.createElement("div"); qd.textContent=q.q[lang];
+        const yd=document.createElement("div"); yd.className="tag-wrong";
+        yd.textContent=TEXT.tagYour[lang]+": "+q.choices[m.chosen][lang];
+        const cd=document.createElement("div"); cd.className="tag-correct";
+        cd.textContent="正解: "+q.choices[q.correct][lang];
+        const ed=document.createElement("div"); ed.className="tag-exp";
+        ed.textContent=TEXT.expTitle[lang]+": "+q.exp[lang];
+        li.appendChild(qd);li.appendChild(yd);li.appendChild(cd);li.appendChild(ed);
+        reviewList.appendChild(li);
+      });
+      reviewCard.style.display="block";
+      btnRestartReview.disabled=false;
+    }else{
+      reviewCard.style.display="none";
+      btnRestartReview.disabled=true;
+    }
+  }
+
+  // ========= ボタンイベント =========
+  btnStartMain.onclick   = ()=>startSession("main");
+  btnRestartMain.onclick = ()=>startSession("main");
+  btnStartReview.onclick = ()=>startSession("review");
+  btnRestartReview.onclick = ()=>startSession("review");
+  btnBackHome.onclick    = ()=>showScreen("home");
+  btnQuitHome.onclick    = ()=>showScreen("home");
+
+  // 初期化
+  renderTopicButtons();
+  renderDiffButtons();
+  applyLanguage();
+  updateLastSession();
+</script>
+</body>
+</html>
