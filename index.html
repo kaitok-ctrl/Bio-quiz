@@ -354,7 +354,7 @@
   let lang = "ja";
   let selectedTopic = "all";     // all / cell / molecules / geneExp / protein / virus
   let selectedLevel = "all";     // all / basic / intermediate
-  const TOTAL_PER_SESSION = 10;  // 1回の最大出題数（上限）
+  const TOTAL_PER_SESSION = 10;  // 1回の最大出題数
 
   let sessionQuestions = [];
   let sessionAnswers = [];
@@ -406,7 +406,6 @@
       en:(i,t)=>`Question ${i} / ${t}`
     },
     resultTitle:{ ja:"結果", en:"Result" },
-    // ← n が「今回実際に出題された問題数」
     resultSummary:{
       ja:(s,p,t,l,n)=>`${TOPIC_DEFS[t].ja}・${LEVEL_DEFS[l].ja}：${n}問中 ${s} 問正解（${p}%）`,
       en:(s,p,t,l,n)=>`${TOPIC_DEFS[t].en} / ${LEVEL_DEFS[l].en}: ${s} of ${n} correct (${p}%).`
@@ -439,10 +438,10 @@
   // ========= 生物の問題バンク =========
   // topic: cell / molecules / geneExp / protein / virus
   // level: basic / intermediate
-
   const QUESTION_BANK = [
+    // --- Cell biology 基礎 ---
     {
-      id:"cell-1",
+      id:"cell-01",
       topic:"cell",
       level:"basic",
       q:{
@@ -463,7 +462,7 @@
       }
     },
     {
-      id:"cell-2",
+      id:"cell-02",
       topic:"cell",
       level:"basic",
       q:{
@@ -484,196 +483,7 @@
       }
     },
     {
-      id:"cell-3",
-      topic:"cell",
-      level:"intermediate",
-      q:{
-        ja:"細胞の大きさが制限される主な理由として最も適切なのはどれ？",
-        en:"What is the main reason why cells are typically small?"
-      },
-      choices:[
-        {ja:"小さいほど拡散が遅くなるから", en:"Because diffusion becomes slower in smaller volumes"},
-        {ja:"表面積/体積比が大きいほど物質交換に有利だから", en:"Because a high surface-area-to-volume ratio favors exchange of materials"},
-        {ja:"DNAの量が細胞径を直接決めるから", en:"Because the amount of DNA strictly sets cell size"},
-        {ja:"小さい細胞はATPを合成できないから", en:"Because small cells cannot make ATP"},
-        {ja:"細胞膜は伸びないため大きくできないから", en:"Because membranes cannot stretch at all"}
-      ],
-      correct:1,
-      exp:{
-        ja:"細胞が大きくなると表面積/体積比が低下し，栄養や老廃物の交換が非効率になるため，多くの細胞は小さなサイズを保つ。",
-        en:"If a cell becomes too large its surface-area-to-volume ratio decreases and exchange of materials becomes inefficient, so most cells remain small."
-      }
-    },
-    {
-      id:"mol-1",
-      topic:"molecules",
-      level:"basic",
-      q:{
-        ja:"生体分子の骨格として最も重要な元素はどれ？",
-        en:"Which element forms the main backbone of most biological molecules?"
-      },
-      choices:[
-        {ja:"ナトリウム", en:"Sodium"},
-        {ja:"カルシウム", en:"Calcium"},
-        {ja:"炭素", en:"Carbon"},
-        {ja:"塩素", en:"Chlorine"},
-        {ja:"マグネシウム", en:"Magnesium"}
-      ],
-      correct:2,
-      exp:{
-        ja:"炭素は4本の共有結合を作ることができ，多様な有機分子骨格を形成できる。",
-        en:"Carbon makes four covalent bonds and allows enormous diversity of organic backbones."
-      }
-    },
-    {
-      id:"mol-2",
-      topic:"molecules",
-      level:"basic",
-      q:{
-        ja:"リン脂質の特徴を説明した文として正しいのはどれ？",
-        en:"Which statement correctly describes a phospholipid?"
-      },
-      choices:[
-        {ja:"完全に疎水性である", en:"It is completely hydrophobic"},
-        {ja:"完全に親水性である", en:"It is completely hydrophilic"},
-        {ja:"1本の脂肪酸鎖のみを持つ", en:"It has only one fatty acid chain"},
-        {ja:"疎水性尾部と親水性頭部を併せ持つ両親媒性分子である", en:"It is amphipathic with hydrophobic tails and a hydrophilic head"},
-        {ja:"細胞膜には含まれない", en:"It is not present in cell membranes"}
-      ],
-      correct:3,
-      exp:{
-        ja:"リン脂質は疎水性の脂肪酸尾部と親水性のリン酸頭部を持つ両親媒性分子で，脂質二重層の基本構成要素である。",
-        en:"Phospholipids have hydrophobic fatty acid tails and a hydrophilic phosphate head, forming the basic structure of lipid bilayers."
-      }
-    },
-    {
-      id:"mol-3",
-      topic:"molecules",
-      level:"intermediate",
-      q:{
-        ja:"タンパク質の二次構造に含まれないものはどれ？",
-        en:"Which is NOT considered a protein secondary structure?"
-      },
-      choices:[
-        {ja:"αヘリックス", en:"α helix"},
-        {ja:"βシート", en:"β sheet"},
-        {ja:"ターン／ループ構造", en:"Turns/loops"},
-        {ja:"ペプチド結合", en:"Peptide bond"},
-        {ja:"ランダムコイル", en:"Random coil regions"}
-      ],
-      correct:3,
-      exp:{
-        ja:"ペプチド結合はアミノ酸同士をつなぐ一次構造の要素であり，二次構造そのものではない。",
-        en:"The peptide bond is part of the primary structure that links amino acids; it is not itself a secondary structure."
-      }
-    },
-    {
-      id:"gene-1",
-      topic:"geneExp",
-      level:"basic",
-      q:{
-        ja:"DNAからRNAが合成される過程を何と呼ぶ？",
-        en:"What is the process called in which RNA is synthesized from DNA?"
-      },
-      choices:[
-        {ja:"翻訳", en:"Translation"},
-        {ja:"複製", en:"Replication"},
-        {ja:"転写", en:"Transcription"},
-        {ja:"スプライシング", en:"Splicing"},
-        {ja:"フォールディング", en:"Folding"}
-      ],
-      correct:2,
-      exp:{
-        ja:"DNA鋳型からRNAポリメラーゼによってRNAを合成する過程は『転写』と呼ばれる。",
-        en:"The synthesis of RNA from a DNA template by RNA polymerase is called transcription."
-      }
-    },
-    {
-      id:"gene-2",
-      topic:"geneExp",
-      level:"intermediate",
-      q:{
-        ja:"真核生物に特徴的なmRNAの成熟過程に含まれないものはどれ？",
-        en:"Which step is NOT part of typical eukaryotic mRNA maturation?"
-      },
-      choices:[
-        {ja:"5' キャップ付加", en:"Addition of a 5' cap"},
-        {ja:"ポリアデニル化（poly(A) tail の付加）", en:"Polyadenylation (poly(A) tail)"},
-        {ja:"イントロンのスプライシング", en:"Splicing of introns"},
-        {ja:"メチル化されたtRNAへの結合", en:"Covalent binding to methylated tRNA"},
-        {ja:"一部の塩基の編集（RNA editing）", en:"RNA editing of some bases"}
-      ],
-      correct:3,
-      exp:{
-        ja:"mRNA成熟にtRNAへの共有結合は含まれない。tRNAは翻訳でアミノ酸を運ぶ別の分子である。",
-        en:"Binding to methylated tRNA is not part of mRNA maturation; tRNA is a separate molecule used in translation."
-      }
-    },
-    {
-      id:"prot-1",
-      topic:"protein",
-      level:"basic",
-      q:{
-        ja:"翻訳に直接関わる分子の組み合わせとして正しいのはどれ？",
-        en:"Which set of molecules acts directly in translation?"
-      },
-      choices:[
-        {ja:"DNA, RNAポリメラーゼ, ヒストン", en:"DNA, RNA polymerase, histones"},
-        {ja:"mRNA, tRNA, リボソーム", en:"mRNA, tRNA, ribosomes"},
-        {ja:"脂質, mRNA, ゴルジ体", en:"Lipids, mRNA, Golgi apparatus"},
-        {ja:"リソソーム, tRNA, DNA", en:"Lysosomes, tRNA, DNA"},
-        {ja:"ミトコンドリア, rRNA, DNAポリメラーゼ", en:"Mitochondria, rRNA, DNA polymerase"}
-      ],
-      correct:1,
-      exp:{
-        ja:"翻訳ではmRNA, アミノアシルtRNA, リボソームが協調してポリペプチド鎖を合成する。",
-        en:"Translation uses mRNA as template, aminoacyl-tRNAs, and ribosomes to synthesize a polypeptide."
-      }
-    },
-    {
-      id:"prot-2",
-      topic:"protein",
-      level:"intermediate",
-      q:{
-        ja:"タンパク質フォールディングに関して正しい記述はどれ？",
-        en:"Which statement about protein folding is correct?"
-      },
-      choices:[
-        {ja:"アミノ酸配列は構造と無関係である", en:"Amino acid sequence is unrelated to the final structure"},
-        {ja:"すべてのタンパク質は自発的に正しく折りたたまれるためシャペロンは不要である", en:"All proteins fold correctly without chaperones"},
-        {ja:"誤ったフォールディングは病気の原因になりうる", en:"Misfolded proteins can lead to disease"},
-        {ja:"フォールディングは細胞質では起こらない", en:"Folding never occurs in the cytosol"},
-        {ja:"タンパク質は常に完全にランダムな構造をとる", en:"Proteins always remain completely random in structure"}
-      ],
-      correct:2,
-      exp:{
-        ja:"プリオン病やアルツハイマー病など，多くの疾患で誤ったフォールディングや凝集が重要な要因となる。",
-        en:"In diseases such as prion diseases and Alzheimer's, protein misfolding and aggregation play key roles."
-      }
-    },
-    {
-      id:"virus-1",
-      topic:"virus",
-      level:"basic",
-      q:{
-        ja:"ウイルスの共通した特徴として正しいのはどれ？",
-        en:"Which feature is common to all viruses?"
-      },
-      choices:[
-        {ja:"自分自身でATPを大量に合成できる", en:"They can produce large amounts of ATP on their own"},
-        {ja:"細胞膜と細胞質を必ず持つ", en:"They always have plasma membrane and cytoplasm"},
-        {ja:"ゲノムとしてDNAかRNAのいずれかを持つ", en:"They have either DNA or RNA as their genome"},
-        {ja:"リボソームを持ちタンパク質合成を自律的に行う", en:"They have ribosomes for independent protein synthesis"},
-        {ja:"無生物との相互作用を持たない", en:"They have no interactions with nonliving matter"}
-      ],
-      correct:2,
-      exp:{
-        ja:"ウイルスはDNAまたはRNAをゲノムとして持つが，自前のリボソームやエネルギー産生系を欠き，宿主細胞に依存する。",
-        en:"Viruses contain either DNA or RNA as their genome but lack their own ribosomes and energy production, depending on host cells."
-      }
-    }
-      {
-      id:"cell-4",
+      id:"cell-03",
       topic:"cell",
       level:"basic",
       q:{
@@ -694,28 +504,178 @@
       }
     },
     {
-      id:"cell-5",
+      id:"cell-04",
       topic:"cell",
-      level:"intermediate",
+      level:"basic",
       q:{
-        ja:"アクチンフィラメントに直接関わる細胞機能として最も適切なのはどれ？",
-        en:"Which cellular process directly involves actin filaments?"
+        ja:"リソソームの主な役割として最も適切なのはどれ？",
+        en:"What is the main role of lysosomes in animal cells?"
       },
       choices:[
-        {ja:"DNA複製", en:"DNA replication"},
-        {ja:"有糸分裂紡錘体の形成", en:"Mitotic spindle formation"},
-        {ja:"筋収縮と細胞のアメーバ運動", en:"Muscle contraction and amoeboid cell movement"},
-        {ja:"タンパク質の翻訳", en:"Protein translation"},
-        {ja:"mRNAスプライシング", en:"mRNA splicing"}
+        {ja:"ATPの産生", en:"ATP production"},
+        {ja:"不要物や異物の分解", en:"Degradation of waste and foreign material"},
+        {ja:"タンパク質合成", en:"Protein synthesis"},
+        {ja:"mRNAの転写", en:"mRNA transcription"},
+        {ja:"細胞骨格の形成", en:"Formation of cytoskeleton"}
       ],
-      correct:2,
+      correct:1,
       exp:{
-        ja:"アクチンフィラメントはミオシンとの相互作用により筋収縮や細胞の移動，細胞質分裂などに関わる。",
-        en:"Actin filaments interact with myosin to power muscle contraction, cell crawling, and cytokinesis."
+        ja:"リソソームは加水分解酵素を含み，細胞内の不要物や取り込まれた異物を分解する。",
+        en:"Lysosomes contain hydrolytic enzymes and break down cellular waste and ingested material."
       }
     },
     {
-      id:"mol-4",
+      id:"cell-05",
+      topic:"cell",
+      level:"basic",
+      q:{
+        ja:"細胞膜のモデルとして広く受け入れられているものはどれ？",
+        en:"Which model is widely accepted for the structure of the plasma membrane?"
+      },
+      choices:[
+        {ja:"三重膜モデル", en:"Triple-layer model"},
+        {ja:"モザイクモデル", en:"Mosaic model"},
+        {ja:"流動モザイクモデル", en:"Fluid mosaic model"},
+        {ja:"格子モデル", en:"Lattice model"},
+        {ja:"単層脂質モデル", en:"Single-layer lipid model"}
+      ],
+      correct:2,
+      exp:{
+        ja:"細胞膜はリン脂質二重層中をタンパク質が動き回る『流動モザイクモデル』で説明される。",
+        en:"The plasma membrane is described by the fluid mosaic model, with proteins moving within a phospholipid bilayer."
+      }
+    },
+    // --- Cell biology 応用 ---
+    {
+      id:"cell-06",
+      topic:"cell",
+      level:"intermediate",
+      q:{
+        ja:"細胞の大きさが制限される主な理由として最も適切なのはどれ？",
+        en:"What is the main reason why cells are typically small?"
+      },
+      choices:[
+        {ja:"小さいほど拡散が遅くなるから", en:"Because diffusion becomes slower in smaller volumes"},
+        {ja:"表面積/体積比が大きいほど物質交換に有利だから", en:"Because a high surface-area-to-volume ratio favors exchange of materials"},
+        {ja:"DNAの量が細胞径を直接決めるから", en:"Because the amount of DNA strictly sets cell size"},
+        {ja:"小さい細胞はATPを合成できないから", en:"Because small cells cannot make ATP"},
+        {ja:"細胞膜は伸びないため大きくできないから", en:"Because membranes cannot stretch at all"}
+      ],
+      correct:1,
+      exp:{
+        ja:"細胞が大きくなると表面積/体積比が低下し，栄養や老廃物の交換が非効率になるため，多くの細胞は小さなサイズを保つ。",
+        en:"If a cell becomes too large its surface-area-to-volume ratio decreases and exchange of materials becomes inefficient, so most cells remain small."
+      }
+    },
+    {
+      id:"cell-07",
+      topic:"cell",
+      level:"intermediate",
+      q:{
+        ja:"エンドサイトーシスに関する説明として正しいのはどれ？",
+        en:"Which statement about endocytosis is correct?"
+      },
+      choices:[
+        {ja:"細胞外への物質分泌の過程である", en:"It is the process of secreting materials out of the cell"},
+        {ja:"細胞が膜をくびり込んで物質を取り込む過程である", en:"The cell engulfs materials by invaginating its membrane"},
+        {ja:"ミトコンドリアでのみ起こる", en:"It occurs only in mitochondria"},
+        {ja:"DNA複製と同義である", en:"It is synonymous with DNA replication"},
+        {ja:"原核生物では決して起こらない", en:"It never occurs in any prokaryote"}
+      ],
+      correct:1,
+      exp:{
+        ja:"エンドサイトーシスは細胞膜が内側に陥入して小胞を形成し，細胞外物質を取り込む過程である。",
+        en:"Endocytosis is the uptake of materials into the cell via invagination of the plasma membrane to form vesicles."
+      }
+    },
+    {
+      id:"cell-08",
+      topic:"cell",
+      level:"intermediate",
+      q:{
+        ja:"植物細胞に特有で，動物細胞には通常みられない構造はどれ？",
+        en:"Which structure is typical of plant cells but usually absent in animal cells?"
+      },
+      choices:[
+        {ja:"リボソーム", en:"Ribosomes"},
+        {ja:"ゴルジ体", en:"Golgi apparatus"},
+        {ja:"細胞壁", en:"Cell wall"},
+        {ja:"滑面小胞体", en:"Smooth ER"},
+        {ja:"ミトコンドリア", en:"Mitochondria"}
+      ],
+      correct:2,
+      exp:{
+        ja:"セルロースからなる細胞壁は植物細胞の特徴であり，動物細胞には通常存在しない。",
+        en:"A cellulose-based cell wall is characteristic of plant cells and is not normally found in animal cells."
+      }
+    },
+
+    // --- Biomolecules 基礎 ---
+    {
+      id:"mol-01",
+      topic:"molecules",
+      level:"basic",
+      q:{
+        ja:"生体分子の骨格として最も重要な元素はどれ？",
+        en:"Which element forms the main backbone of most biological molecules?"
+      },
+      choices:[
+        {ja:"ナトリウム", en:"Sodium"},
+        {ja:"カルシウム", en:"Calcium"},
+        {ja:"炭素", en:"Carbon"},
+        {ja:"塩素", en:"Chlorine"},
+        {ja:"マグネシウム", en:"Magnesium"}
+      ],
+      correct:2,
+      exp:{
+        ja:"炭素は4本の共有結合を作ることができ，多様な有機分子骨格を形成できる。",
+        en:"Carbon makes four covalent bonds and allows enormous diversity of organic backbones."
+      }
+    },
+    {
+      id:"mol-02",
+      topic:"molecules",
+      level:"basic",
+      q:{
+        ja:"リン脂質の特徴を説明した文として正しいのはどれ？",
+        en:"Which statement correctly describes a phospholipid?"
+      },
+      choices:[
+        {ja:"完全に疎水性である", en:"It is completely hydrophobic"},
+        {ja:"完全に親水性である", en:"It is completely hydrophilic"},
+        {ja:"1本の脂肪酸鎖のみを持つ", en:"It has only one fatty acid chain"},
+        {ja:"疎水性尾部と親水性頭部を併せ持つ両親媒性分子である", en:"It is amphipathic with hydrophobic tails and a hydrophilic head"},
+        {ja:"細胞膜には含まれない", en:"It is not present in cell membranes"}
+      ],
+      correct:3,
+      exp:{
+        ja:"リン脂質は疎水性の脂肪酸尾部と親水性のリン酸頭部を持つ両親媒性分子で，脂質二重層の基本構成要素である。",
+        en:"Phospholipids have hydrophobic fatty acid tails and a hydrophilic phosphate head, forming the basic structure of lipid bilayers."
+      }
+    },
+    {
+      id:"mol-03",
+      topic:"molecules",
+      level:"basic",
+      q:{
+        ja:"次のうち炭水化物に分類されるものはどれ？",
+        en:"Which of the following is classified as a carbohydrate?"
+      },
+      choices:[
+        {ja:"トリグリセリド", en:"Triglyceride"},
+        {ja:"グルコース", en:"Glucose"},
+        {ja:"ホスホリピド", en:"Phospholipid"},
+        {ja:"ヘモグロビン", en:"Hemoglobin"},
+        {ja:"DNA", en:"DNA"}
+      ],
+      correct:1,
+      exp:{
+        ja:"グルコースは単糖類であり，炭水化物の基本単位の一つである。",
+        en:"Glucose is a monosaccharide and a basic unit of carbohydrates."
+      }
+    },
+    {
+      id:"mol-04",
       topic:"molecules",
       level:"basic",
       q:{
@@ -736,7 +696,51 @@
       }
     },
     {
-      id:"mol-5",
+      id:"mol-05",
+      topic:"molecules",
+      level:"basic",
+      q:{
+        ja:"酵素の一般的な特徴として正しいのはどれ？",
+        en:"Which is a general feature of enzymes?"
+      },
+      choices:[
+        {ja:"反応の活性化エネルギーを下げる", en:"They lower the activation energy of reactions"},
+        {ja:"常に反応速度を遅くする", en:"They always slow down reactions"},
+        {ja:"反応で消費されて二度と再利用されない", en:"They are consumed and never reused"},
+        {ja:"全て脂質でできている", en:"All of them are lipids"},
+        {ja:"温度の影響を受けない", en:"They are not affected by temperature"}
+      ],
+      correct:0,
+      exp:{
+        ja:"酵素は活性化エネルギーを下げることで反応速度を高める触媒として働く。",
+        en:"Enzymes act as catalysts that increase reaction rates by lowering activation energy."
+      }
+    },
+
+    // --- Biomolecules 応用 ---
+    {
+      id:"mol-06",
+      topic:"molecules",
+      level:"intermediate",
+      q:{
+        ja:"タンパク質の二次構造に含まれないものはどれ？",
+        en:"Which is NOT considered a protein secondary structure?"
+      },
+      choices:[
+        {ja:"αヘリックス", en:"α helix"},
+        {ja:"βシート", en:"β sheet"},
+        {ja:"ターン／ループ構造", en:"Turns/loops"},
+        {ja:"ペプチド結合", en:"Peptide bond"},
+        {ja:"ランダムコイル", en:"Random coil regions"}
+      ],
+      correct:3,
+      exp:{
+        ja:"ペプチド結合はアミノ酸同士をつなぐ一次構造の要素であり，二次構造そのものではない。",
+        en:"The peptide bond is part of the primary structure that links amino acids; it is not itself a secondary structure."
+      }
+    },
+    {
+      id:"mol-07",
       topic:"molecules",
       level:"intermediate",
       q:{
@@ -757,7 +761,72 @@
       }
     },
     {
-      id:"gene-3",
+      id:"mol-08",
+      topic:"molecules",
+      level:"intermediate",
+      q:{
+        ja:"DNA二重らせんを安定化する結合として最も重要なのはどれ？",
+        en:"Which interaction is most important in stabilizing the DNA double helix?"
+      },
+      choices:[
+        {ja:"ペプチド結合", en:"Peptide bonds"},
+        {ja:"リン酸エステル結合", en:"Phosphate ester bonds"},
+        {ja:"塩基間の水素結合と塩基スタッキング", en:"Hydrogen bonds and base stacking"},
+        {ja:"ジスルフィド結合", en:"Disulfide bonds"},
+        {ja:"グリコシド結合", en:"Glycosidic bonds"}
+      ],
+      correct:2,
+      exp:{
+        ja:"相補的塩基間の水素結合と疎水的な塩基スタッキングがDNA二重らせんの安定化に重要である。",
+        en:"Complementary base pairing via hydrogen bonds and hydrophobic base stacking together stabilize the DNA double helix."
+      }
+    },
+
+    // --- Gene expression 基礎 ---
+    {
+      id:"gene-01",
+      topic:"geneExp",
+      level:"basic",
+      q:{
+        ja:"DNAからRNAが合成される過程を何と呼ぶ？",
+        en:"What is the process called in which RNA is synthesized from DNA?"
+      },
+      choices:[
+        {ja:"翻訳", en:"Translation"},
+        {ja:"複製", en:"Replication"},
+        {ja:"転写", en:"Transcription"},
+        {ja:"スプライシング", en:"Splicing"},
+        {ja:"フォールディング", en:"Folding"}
+      ],
+      correct:2,
+      exp:{
+        ja:"DNA鋳型からRNAポリメラーゼによってRNAを合成する過程は『転写』と呼ばれる。",
+        en:"The synthesis of RNA from a DNA template by RNA polymerase is called transcription."
+      }
+    },
+    {
+      id:"gene-02",
+      topic:"geneExp",
+      level:"basic",
+      q:{
+        ja:"真核細胞で転写が主に起こる場所はどこ？",
+        en:"Where does transcription mainly occur in eukaryotic cells?"
+      },
+      choices:[
+        {ja:"細胞質", en:"Cytoplasm"},
+        {ja:"ミトコンドリア膜", en:"Mitochondrial membrane"},
+        {ja:"細胞核内", en:"Inside the nucleus"},
+        {ja:"リソソーム", en:"Lysosomes"},
+        {ja:"ゴルジ体", en:"Golgi apparatus"}
+      ],
+      correct:2,
+      exp:{
+        ja:"真核細胞ではDNAは核内に存在し，mRNAの転写も主に核内で行われる。",
+        en:"In eukaryotic cells, DNA resides in the nucleus, and transcription of mRNA mainly occurs there."
+      }
+    },
+    {
+      id:"gene-03",
       topic:"geneExp",
       level:"basic",
       q:{
@@ -778,7 +847,51 @@
       }
     },
     {
-      id:"gene-4",
+      id:"gene-04",
+      topic:"geneExp",
+      level:"basic",
+      q:{
+        ja:"RNAにおいてアデニン（A）と塩基対を形成する塩基はどれ？",
+        en:"In RNA, which base pairs with adenine (A)?"
+      },
+      choices:[
+        {ja:"チミン（T）", en:"Thymine (T)"},
+        {ja:"ウラシル（U）", en:"Uracil (U)"},
+        {ja:"シトシン（C）", en:"Cytosine (C)"},
+        {ja:"グアニン（G）", en:"Guanine (G)"},
+        {ja:"どの塩基とも対を作らない", en:"It does not pair with any base"}
+      ],
+      correct:1,
+      exp:{
+        ja:"RNAではチミンの代わりにウラシルが使われ，A-Uの塩基対を形成する。",
+        en:"RNA uses uracil instead of thymine, forming A–U base pairs."
+      }
+    },
+
+    // --- Gene expression 応用 ---
+    {
+      id:"gene-05",
+      topic:"geneExp",
+      level:"intermediate",
+      q:{
+        ja:"真核生物に特徴的なmRNAの成熟過程に含まれないものはどれ？",
+        en:"Which step is NOT part of typical eukaryotic mRNA maturation?"
+      },
+      choices:[
+        {ja:"5' キャップ付加", en:"Addition of a 5' cap"},
+        {ja:"ポリアデニル化（poly(A) tail の付加）", en:"Polyadenylation (poly(A) tail)"},
+        {ja:"イントロンのスプライシング", en:"Splicing of introns"},
+        {ja:"メチル化されたtRNAへの結合", en:"Covalent binding to methylated tRNA"},
+        {ja:"一部の塩基の編集（RNA editing）", en:"RNA editing of some bases"}
+      ],
+      correct:3,
+      exp:{
+        ja:"mRNA成熟にtRNAへの共有結合は含まれない。tRNAは翻訳でアミノ酸を運ぶ別の分子である。",
+        en:"Binding to methylated tRNA is not part of mRNA maturation; tRNA is a separate molecule used in translation."
+      }
+    },
+    {
+      id:"gene-06",
       topic:"geneExp",
       level:"intermediate",
       q:{
@@ -799,7 +912,93 @@
       }
     },
     {
-      id:"prot-3",
+      id:"gene-07",
+      topic:"geneExp",
+      level:"intermediate",
+      q:{
+        ja:"プロモーター領域の役割として最も適切なのはどれ？",
+        en:"What is the main role of a promoter region in DNA?"
+      },
+      choices:[
+        {ja:"翻訳開始位置を決める", en:"To determine the start of translation"},
+        {ja:"スプライシング部位を形成する", en:"To form splicing sites"},
+        {ja:"RNAポリメラーゼが結合し転写を開始する位置を決める", en:"To bind RNA polymerase and define where transcription begins"},
+        {ja:"テロメアを延長する", en:"To extend telomeres"},
+        {ja:"DNA二本鎖を接着する", en:"To glue together the two DNA strands"}
+      ],
+      correct:2,
+      exp:{
+        ja:"プロモーターはRNAポリメラーゼや転写因子が結合する領域で，転写開始位置を規定する。",
+        en:"Promoters are DNA regions where RNA polymerase and transcription factors bind to initiate transcription."
+      }
+    },
+    {
+      id:"gene-08",
+      topic:"geneExp",
+      level:"intermediate",
+      q:{
+        ja:"イントロンとエクソンに関する説明として正しいのはどれ？",
+        en:"Which statement correctly describes introns and exons?"
+      },
+      choices:[
+        {ja:"イントロンは翻訳される領域でエクソンは除去される", en:"Introns are translated regions and exons are removed"},
+        {ja:"両方ともスプライシング後にmRNAから除かれる", en:"Both are removed from mRNA after splicing"},
+        {ja:"イントロンは非翻訳領域でスプライシングにより除かれる", en:"Introns are non-coding regions removed by splicing"},
+        {ja:"エクソンはDNAにしか存在せずRNAには存在しない", en:"Exons exist only in DNA and not in RNA"},
+        {ja:"イントロンは原核生物に多く見られる", en:"Introns are abundant mainly in prokaryotes"}
+      ],
+      correct:2,
+      exp:{
+        ja:"イントロンは転写されるがスプライシングで除かれ，エクソンがつながって成熟mRNAとなる。",
+        en:"Introns are transcribed but removed by splicing, leaving exons joined together in mature mRNA."
+      }
+    },
+
+    // --- Protein 基礎 ---
+    {
+      id:"prot-01",
+      topic:"protein",
+      level:"basic",
+      q:{
+        ja:"翻訳に直接関わる分子の組み合わせとして正しいのはどれ？",
+        en:"Which set of molecules acts directly in translation?"
+      },
+      choices:[
+        {ja:"DNA, RNAポリメラーゼ, ヒストン", en:"DNA, RNA polymerase, histones"},
+        {ja:"mRNA, tRNA, リボソーム", en:"mRNA, tRNA, ribosomes"},
+        {ja:"脂質, mRNA, ゴルジ体", en:"Lipids, mRNA, Golgi apparatus"},
+        {ja:"リソソーム, tRNA, DNA", en:"Lysosomes, tRNA, DNA"},
+        {ja:"ミトコンドリア, rRNA, DNAポリメラーゼ", en:"Mitochondria, rRNA, DNA polymerase"}
+      ],
+      correct:1,
+      exp:{
+        ja:"翻訳ではmRNA, アミノアシルtRNA, リボソームが協調してポリペプチド鎖を合成する。",
+        en:"Translation uses mRNA as template, aminoacyl-tRNAs, and ribosomes to synthesize a polypeptide."
+      }
+    },
+    {
+      id:"prot-02",
+      topic:"protein",
+      level:"basic",
+      q:{
+        ja:"タンパク質の一次構造を決めるものはどれ？",
+        en:"What determines the primary structure of a protein?"
+      },
+      choices:[
+        {ja:"折りたたまれた三次構造", en:"The folded tertiary structure"},
+        {ja:"アミノ酸の配列", en:"The sequence of amino acids"},
+        {ja:"ジスルフィド結合の数", en:"The number of disulfide bonds"},
+        {ja:"リン脂質との相互作用", en:"Interactions with phospholipids"},
+        {ja:"糖鎖修飾のパターン", en:"Patterns of glycosylation"}
+      ],
+      correct:1,
+      exp:{
+        ja:"タンパク質の一次構造はアミノ酸配列そのものであり，その後の高次構造や機能を決定づける。",
+        en:"The primary structure of a protein is its amino acid sequence, which largely determines higher-order structure and function."
+      }
+    },
+    {
+      id:"prot-03",
       topic:"protein",
       level:"basic",
       q:{
@@ -820,7 +1019,51 @@
       }
     },
     {
-      id:"prot-4",
+      id:"prot-04",
+      topic:"protein",
+      level:"basic",
+      q:{
+        ja:"粗面小胞体（RER）のリボソームで合成されるタンパク質は主にどこへ運ばれる？",
+        en:"Proteins synthesized on ribosomes of the rough ER are mainly destined for which location?"
+      },
+      choices:[
+        {ja:"細胞核内のみ", en:"Only inside the nucleus"},
+        {ja:"細胞質にとどまる", en:"They remain in the cytosol"},
+        {ja:"分泌経路や膜系（細胞外・膜タンパク質など）", en:"Secretory pathway and membranes (secreted and membrane proteins)"},
+        {ja:"ミトコンドリアマトリックス", en:"Mitochondrial matrix"},
+        {ja:"細胞骨格フィラメント", en:"Cytoskeletal filaments"}
+      ],
+      correct:2,
+      exp:{
+        ja:"粗面小胞体で合成されたタンパク質はゴルジ体を経て分泌タンパク質や膜タンパク質として運ばれることが多い。",
+        en:"Proteins synthesized on rough ER ribosomes usually enter the secretory pathway and become secreted or membrane proteins."
+      }
+    },
+
+    // --- Protein 応用 ---
+    {
+      id:"prot-05",
+      topic:"protein",
+      level:"intermediate",
+      q:{
+        ja:"タンパク質フォールディングに関して正しい記述はどれ？",
+        en:"Which statement about protein folding is correct?"
+      },
+      choices:[
+        {ja:"アミノ酸配列は構造と無関係である", en:"Amino acid sequence is unrelated to the final structure"},
+        {ja:"すべてのタンパク質は自発的に正しく折りたたまれるためシャペロンは不要である", en:"All proteins fold correctly without chaperones"},
+        {ja:"誤ったフォールディングは病気の原因になりうる", en:"Misfolded proteins can lead to disease"},
+        {ja:"フォールディングは細胞質では起こらない", en:"Folding never occurs in the cytosol"},
+        {ja:"タンパク質は常に完全にランダムな構造をとる", en:"Proteins always remain completely random in structure"}
+      ],
+      correct:2,
+      exp:{
+        ja:"プリオン病やアルツハイマー病など，多くの疾患で誤ったフォールディングや凝集が重要な要因となる。",
+        en:"In diseases such as prion diseases and Alzheimer's, protein misfolding and aggregation play key roles."
+      }
+    },
+    {
+      id:"prot-06",
       topic:"protein",
       level:"intermediate",
       q:{
@@ -841,7 +1084,72 @@
       }
     },
     {
-      id:"virus-2",
+      id:"prot-07",
+      topic:"protein",
+      level:"intermediate",
+      q:{
+        ja:"翻訳後修飾の例として最も適切なのはどれ？",
+        en:"Which is an example of a post-translational modification?"
+      },
+      choices:[
+        {ja:"DNAの複製", en:"Replication of DNA"},
+        {ja:"mRNAへの5'キャップ付加", en:"Addition of a 5′ cap to mRNA"},
+        {ja:"アミノ酸側鎖のリン酸化", en:"Phosphorylation of amino acid side chains"},
+        {ja:"イントロンのスプライシング", en:"Splicing of introns"},
+        {ja:"tRNAへのアミノ酸結合", en:"Charging tRNA with amino acids"}
+      ],
+      correct:2,
+      exp:{
+        ja:"リン酸化やアセチル化，糖鎖付加などはタンパク質が合成された後に起こる翻訳後修飾の代表例である。",
+        en:"Phosphorylation, acetylation, and glycosylation are typical post-translational modifications of proteins."
+      }
+    },
+    {
+      id:"prot-08",
+      topic:"protein",
+      level:"intermediate",
+      q:{
+        ja:"分子シャペロンの主な役割として正しいのはどれ？",
+        en:"What is the main role of molecular chaperones?"
+      },
+      choices:[
+        {ja:"DNA鎖を切断して修復する", en:"To cut DNA strands for repair"},
+        {ja:"タンパク質の正しいフォールディングを助ける", en:"To assist proteins in folding correctly"},
+        {ja:"mRNAを翻訳から保護する", en:"To protect mRNA from translation"},
+        {ja:"脂質二重層を合成する", en:"To synthesize lipid bilayers"},
+        {ja:"ATPの産生を行う", en:"To produce ATP"}
+      ],
+      correct:1,
+      exp:{
+        ja:"分子シャペロンは新生ポリペプチドや変性したタンパク質が正しく折りたたまれるように補助する。",
+        en:"Molecular chaperones help newly synthesized or misfolded polypeptides achieve their correct conformation."
+      }
+    },
+
+    // --- Virus 基礎 ---
+    {
+      id:"virus-01",
+      topic:"virus",
+      level:"basic",
+      q:{
+        ja:"ウイルスの共通した特徴として正しいのはどれ？",
+        en:"Which feature is common to all viruses?"
+      },
+      choices:[
+        {ja:"自分自身でATPを大量に合成できる", en:"They can produce large amounts of ATP on their own"},
+        {ja:"細胞膜と細胞質を必ず持つ", en:"They always have plasma membrane and cytoplasm"},
+        {ja:"ゲノムとしてDNAかRNAのいずれかを持つ", en:"They have either DNA or RNA as their genome"},
+        {ja:"リボソームを持ちタンパク質合成を自律的に行う", en:"They have ribosomes for independent protein synthesis"},
+        {ja:"無生物との相互作用を持たない", en:"They have no interactions with nonliving matter"}
+      ],
+      correct:2,
+      exp:{
+        ja:"ウイルスはDNAまたはRNAをゲノムとして持つが，自前のリボソームやエネルギー産生系を欠き，宿主細胞に依存する。",
+        en:"Viruses contain either DNA or RNA as their genome but lack their own ribosomes and energy production, depending on host cells."
+      }
+    },
+    {
+      id:"virus-02",
       topic:"virus",
       level:"basic",
       q:{
@@ -862,11 +1170,76 @@
       }
     },
     {
-      id:"virus-3",
+      id:"virus-03",
+      topic:"virus",
+      level:"basic",
+      q:{
+        ja:"バクテリオファージとはどのようなウイルスか？",
+        en:"What is a bacteriophage?"
+      },
+      choices:[
+        {ja:"真菌を感染させるウイルス", en:"A virus that infects fungi"},
+        {ja:"細菌を感染させるウイルス", en:"A virus that infects bacteria"},
+        {ja:"植物を感染させるウイルス", en:"A virus that infects plants"},
+        {ja:"ヒトの免疫細胞だけを標的とするウイルス", en:"A virus that specifically targets human immune cells"},
+        {ja:"ウイルス同士を感染させるウイルス", en:"A virus that infects other viruses"}
+      ],
+      correct:1,
+      exp:{
+        ja:"バクテリオファージ（ファージ）は細菌を宿主とするウイルスであり，細菌感染症の研究などで重要である。",
+        en:"Bacteriophages (phages) are viruses that infect bacteria and are important tools in microbiology."
+      }
+    },
+    {
+      id:"virus-04",
+      topic:"virus",
+      level:"basic",
+      q:{
+        ja:"ウイルスの宿主域（ホストレンジ）とは何を指すか？",
+        en:"What does the host range of a virus refer to?"
+      },
+      choices:[
+        {ja:"ウイルスが生存できる温度範囲", en:"The temperature range in which a virus can survive"},
+        {ja:"ウイルスが感染・増殖できる宿主の種類", en:"The types of hosts a virus can infect and replicate in"},
+        {ja:"ウイルス粒子の大きさの分布", en:"The size distribution of viral particles"},
+        {ja:"ゲノム長の範囲", en:"The range of genome lengths"},
+        {ja:"感染に必要な時間", en:"The time required for infection"}
+      ],
+      correct:1,
+      exp:{
+        ja:"宿主域とは，そのウイルスが感染できる生物種や細胞の範囲を指す。",
+        en:"The host range describes the spectrum of species or cell types that a virus can infect."
+      }
+    },
+
+    // --- Virus 応用 ---
+    {
+      id:"virus-05",
       topic:"virus",
       level:"intermediate",
       q:{
-        ja:"レトロウイルスの特徴的な酵素はどれ？",
+        ja:"溶菌サイクルの特徴として最も適切なのはどれ？",
+        en:"Which is a characteristic feature of the lytic cycle of a virus?"
+      },
+      choices:[
+        {ja:"宿主ゲノムに組み込まれ潜伏する", en:"Integration into the host genome and latency"},
+        {ja:"宿主細胞を破壊せずに子孫ウイルスを放出する", en:"Releasing progeny viruses without damaging the host cell"},
+        {ja:"宿主細胞を破壊して多くのウイルス粒子を放出する", en:"Destroying the host cell and releasing many viral particles"},
+        {ja:"宿主細胞内でのみDNA複製を阻害する", en:"Only inhibiting DNA replication in the host"},
+        {ja:"常にエンベロープ形成を伴う", en:"Always involving envelope formation"}
+      ],
+      correct:2,
+      exp:{
+        ja:"溶菌サイクルではウイルス増殖の結果，宿主細胞が破壊され多数のウイルス粒子が放出される。",
+        en:"In the lytic cycle, viral replication leads to lysis of the host cell and release of many virions."
+      }
+    },
+    {
+      id:"virus-06",
+      topic:"virus",
+      level:"intermediate",
+      q:{
+        ja:"レトロウイルスに特徴的な酵素はどれ？",
         en:"Which enzyme is characteristic of retroviruses?"
       },
       choices:[
@@ -874,7 +1247,7 @@
         {ja:"DNAリガーゼ", en:"DNA ligase"},
         {ja:"逆転写酵素", en:"Reverse transcriptase"},
         {ja:"RNAヘリカーゼ", en:"RNA helicase"},
-        {ja:"ペプチジルトランスフェラーゼ", en:"Peptidyl transferase"}
+        {ja:"DNAメチルトランスフェラーゼ", en:"DNA methyltransferase"}
       ],
       correct:2,
       exp:{
