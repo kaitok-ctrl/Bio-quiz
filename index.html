@@ -841,7 +841,6 @@
 
   // ========= 問題表示 =========
   function renderQuestion() {
-    // プールがない／インデックスが範囲外ならそのまま終了画面へ
     if (!sessionQuestions || !sessionQuestions.length ||
         currentIndex < 0 || currentIndex >= sessionQuestions.length) {
       finishSession();
@@ -849,8 +848,7 @@
     }
 
     const q = sessionQuestions[currentIndex];
-
-    const total = sessionQuestions.length || TOTAL_PER_SESSION;
+    const total = sessionQuestions.length;
 
     qCounter.textContent = TEXT.qCounter[lang](currentIndex + 1, total);
     qTopic.textContent   = TOPIC_DEFS[q.topic]?.[lang] || "";
@@ -897,10 +895,66 @@
   }
 
   // ========= 回答・次へ =========
-    btnNext.onclick = () => {
-    const total = sessionQuestions.length || TOTAL_PER_SESSION;
+  btnSubmit.onclick = () => {
+    const q = sessionQuestions[currentIndex];
+    if (!q) return;
 
-    // まだ残りの問題がある
+    const selected = Array.from(optionsDiv.children)
+      .find(b => b.classList.contains("selected"));
+    if (!selected) return;
+
+    const chosen   = Number(selected.dataset.index);
+    const isCorrect = chosen === q.correct;
+
+    try {
+      if (isCorrect) {
+        score++;
+        currentStreak++;
+        if (currentStreak > bestStreak) bestStreak = currentStreak;
+      } else {
+        currentStreak = 0;
+      }
+
+      sessionAnswers.push({
+        index: currentIndex,
+        chosen,
+        correct: q.correct,
+        id: q.id
+      });
+
+      Array.from(optionsDiv.children).forEach((b, idx) => {
+        b.onclick = null;
+        if (idx === q.correct) b.classList.add("correct");
+        if (idx === chosen && idx !== q.correct) b.classList.add("wrong");
+      });
+
+      const tag = document.createElement("span");
+      tag.className = "state-tag";
+      tag.textContent = isCorrect
+        ? TEXT.correctLabel[lang]
+        : TEXT.wrongLabel[lang];
+      selected.appendChild(tag);
+
+      explanationBox.style.display = "block";
+      expTitle.textContent = TEXT.expTitle[lang];
+      const explanation =
+        q.exp && (q.exp[lang] || q.exp.ja || q.exp.en) || "";
+      expBody.textContent = explanation;
+
+      statCorrect.textContent =
+        TEXT.statCorrect[lang] + ": " + score;
+      const acc = Math.round(score / sessionAnswers.length * 100);
+      statAccuracy.textContent =
+        TEXT.statAccuracy[lang] + ": " + acc + "%";
+    } finally {
+      btnSubmit.style.display = "none";
+      btnNext.style.display   = "block";
+    }
+  };
+
+  btnNext.onclick = () => {
+    const total = sessionQuestions.length;
+
     if (currentIndex < total - 1) {
       currentIndex++;
 
@@ -909,11 +963,8 @@
       explanationBox.style.display = "none";
 
       renderQuestion();
-
-      // スマホで必ず問題文が見えるように一番上へスクロール
       window.scrollTo({ top: 0, behavior: "smooth" });
     } else {
-      // 最後の問題だった → 結果画面へ
       finishSession();
     }
   };
