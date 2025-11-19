@@ -241,7 +241,7 @@
     <div>
       <h1>UniCamillus Biology Trainer</h1>
       <p class="sub" id="subtitle">
-        分野と難易度を選んで、10問ずつ生物（細胞・分子・遺伝子発現など）をトレーニングできます。
+        分野と難易度を選んで、最大10問ずつ生物（細胞・分子・遺伝子発現など）をトレーニングできます。
       </p>
     </div>
     <div>
@@ -257,7 +257,7 @@
     <div class="card">
       <p id="home-text">
         まず分野と難易度を選び、「10問テスト」を押してください。
-        選んだ範囲からランダムに10問出題されます。
+        選んだ範囲からランダムに最大10問出題されます。
       </p>
 
       <p class="topic-box-title" id="topic-title">分野を選択:</p>
@@ -354,7 +354,7 @@
   let lang = "ja";
   let selectedTopic = "all";     // all / cell / molecules / geneExp / protein / virus
   let selectedLevel = "all";     // all / basic / intermediate
-  const TOTAL_PER_SESSION = 10;
+  const TOTAL_PER_SESSION = 10;  // 1回の最大出題数（上限）
 
   let sessionQuestions = [];
   let sessionAnswers = [];
@@ -362,6 +362,7 @@
   let score = 0;
   let bestStreak = 0;
   let currentStreak = 0;
+  let sessionTotal = TOTAL_PER_SESSION; // 実際に今回出題する問題数
 
   // ========= テキスト類 =========
   const TOPIC_DEFS = {
@@ -381,12 +382,12 @@
 
   const TEXT = {
     subtitle:{
-      ja:"分野と難易度を選んで、10問ずつ生物（細胞・分子・遺伝子発現など）をトレーニングできます。",
-      en:"Choose topic and difficulty and practice biology in 10-question sessions."
+      ja:"分野と難易度を選んで、最大10問ずつ生物（細胞・分子・遺伝子発現など）をトレーニングできます。",
+      en:"Choose topic and difficulty and practice biology in sessions of up to 10 questions."
     },
     homeText:{
-      ja:"まず分野と難易度を選び、「10問テスト」を押してください。選んだ範囲からランダムに10問出題されます。",
-      en:"Select topic and difficulty, then start a 10-question test from that pool."
+      ja:"まず分野と難易度を選び、「10問テスト」を押してください。選んだ範囲からランダムに最大10問出題されます。",
+      en:"Select topic and difficulty, then start the test. Up to 10 questions are drawn at random from the chosen pool."
     },
     topicTitle:{ ja:"分野を選択:", en:"Choose topic:" },
     diffTitle:{ ja:"難易度を選択:", en:"Choose difficulty:" },
@@ -405,9 +406,10 @@
       en:(i,t)=>`Question ${i} / ${t}`
     },
     resultTitle:{ ja:"結果", en:"Result" },
+    // ← n が「今回実際に出題された問題数」
     resultSummary:{
-      ja:(s,p,t,l)=>`${TOPIC_DEFS[t].ja}・${LEVEL_DEFS[l].ja}：${TOTAL_PER_SESSION}問中 ${s} 問正解（${p}%）`,
-      en:(s,p,t,l)=>`${TOPIC_DEFS[t].en} / ${LEVEL_DEFS[l].en}: ${s} of ${TOTAL_PER_SESSION} correct (${p}%).`
+      ja:(s,p,t,l,n)=>`${TOPIC_DEFS[t].ja}・${LEVEL_DEFS[l].ja}：${n}問中 ${s} 問正解（${p}%）`,
+      en:(s,p,t,l,n)=>`${TOPIC_DEFS[t].en} / ${LEVEL_DEFS[l].en}: ${s} of ${n} correct (${p}%).`
     },
     resultDetail1:{
       ja:(c)=>`連続正解のベスト: ${c}`,
@@ -743,16 +745,16 @@
     }catch{return [];}
   }
   function updateLastSession(){
-    const score = localStorage.getItem("bio_last_score");
+    const scoreStored = localStorage.getItem("bio_last_score");
     const date  = localStorage.getItem("bio_last_date");
-    if(!score || !date){
+    if(!scoreStored || !date){
       lastSessionRow.style.display="none";
       btnStartReview.disabled = !getStoredWrongIds().length;
       return;
     }
     lastSessionRow.style.display="flex";
     const d=new Date(date);
-    lastScoreText.textContent = (lang==="ja"?"前回のスコア: ":"Last score: ")+score+"%";
+    lastScoreText.textContent = (lang==="ja"?"前回のスコア: ":"Last score: ")+scoreStored+"%";
     lastDateText.textContent  = (lang==="ja"?"実施日: ":"Date: ")+d.toLocaleString();
     btnStartReview.disabled = !getStoredWrongIds().length;
   }
@@ -824,7 +826,10 @@
       if(!pool.length) pool=QUESTION_BANK;
     }
 
-    sessionQuestions = shuffle(pool).slice(0,TOTAL_PER_SESSION);
+    // 実際に今回出す問題数：プールが10問未満ならその数だけ
+    sessionTotal = Math.min(TOTAL_PER_SESSION, pool.length || TOTAL_PER_SESSION);
+    sessionQuestions = shuffle(pool).slice(0, sessionTotal);
+
     sessionAnswers=[];
     currentIndex=0;
     score=0;
@@ -848,7 +853,7 @@
     }
 
     const q = sessionQuestions[currentIndex];
-    const total = sessionQuestions.length;
+    const total = sessionTotal;
 
     qCounter.textContent = TEXT.qCounter[lang](currentIndex + 1, total);
     qTopic.textContent   = TOPIC_DEFS[q.topic]?.[lang] || "";
@@ -953,7 +958,7 @@
   };
 
   btnNext.onclick = () => {
-    const total = sessionQuestions.length;
+    const total = sessionTotal;
 
     if (currentIndex < total - 1) {
       currentIndex++;
@@ -971,8 +976,8 @@
 
   // ========= 結果 =========
   function finishSession(){
-    const percent=Math.round(score/TOTAL_PER_SESSION*100);
-    const wrong=TOTAL_PER_SESSION-score;
+    const percent = Math.round(score / sessionTotal * 100);
+    const wrong   = sessionTotal - score;
 
     const wrongIds=sessionAnswers.filter(a=>a.chosen!==a.correct).map(a=>a.id);
     localStorage.setItem("bio_last_wrong_ids",JSON.stringify(wrongIds));
@@ -985,11 +990,12 @@
   }
 
   function renderResult(){
-    const percent=Math.round(score/TOTAL_PER_SESSION*100);
-    const wrong=TOTAL_PER_SESSION-score;
+    const percent = Math.round(score / sessionTotal * 100);
+    const wrong   = sessionTotal - score;
 
     resultTitle.textContent   = TEXT.resultTitle[lang];
-    resultSummary.textContent = TEXT.resultSummary[lang](score,percent,selectedTopic,selectedLevel);
+    resultSummary.textContent =
+      TEXT.resultSummary[lang](score, percent, selectedTopic, selectedLevel, sessionTotal);
     resultDetail1.textContent = TEXT.resultDetail1[lang](bestStreak);
     resultDetail2.textContent = TEXT.resultDetail2[lang](wrong);
 
