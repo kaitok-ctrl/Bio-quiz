@@ -840,107 +840,81 @@
   }
 
   // ========= 問題表示 =========
-  function renderQuestion(){
-    const q=sessionQuestions[currentIndex];
-    if(!q) return;
-    qCounter.textContent = TEXT.qCounter[lang](currentIndex+1,TOTAL_PER_SESSION);
-    qTopic.textContent   = TOPIC_DEFS[q.topic]?.[lang] || "";
-    badgeText.textContent = (q.level==="basic"?TEXT.levelBasic[lang]:TEXT.levelInter[lang]);
-    qText.textContent    = q.q[lang];
+  function renderQuestion() {
+    // プールがない／インデックスが範囲外ならそのまま終了画面へ
+    if (!sessionQuestions || !sessionQuestions.length ||
+        currentIndex < 0 || currentIndex >= sessionQuestions.length) {
+      finishSession();
+      return;
+    }
 
-    optionsDiv.innerHTML="";
-    q.choices.forEach((c,idx)=>{
-      const btn=document.createElement("button");
-      btn.className="opt-btn";
-      btn.dataset.index=idx;
-      const letter=document.createElement("span");
-      letter.className="letter";
-      letter.textContent=String.fromCharCode(65+idx)+".";
-      const txt=document.createElement("span");
-      txt.textContent=c[lang];
-      btn.appendChild(letter);btn.appendChild(txt);
-      btn.onclick=()=>{
-        if(btnSubmit.disabled) return;
-        Array.from(optionsDiv.children).forEach(b=>b.classList.remove("selected"));
+    const q = sessionQuestions[currentIndex];
+
+    const total = sessionQuestions.length || TOTAL_PER_SESSION;
+
+    qCounter.textContent = TEXT.qCounter[lang](currentIndex + 1, total);
+    qTopic.textContent   = TOPIC_DEFS[q.topic]?.[lang] || "";
+    badgeText.textContent =
+      (q.level === "basic" ? TEXT.levelBasic[lang] : TEXT.levelInter[lang]);
+    qText.textContent = q.q[lang];
+
+    optionsDiv.innerHTML = "";
+    q.choices.forEach((c, idx) => {
+      const btn = document.createElement("button");
+      btn.className = "opt-btn";
+      btn.dataset.index = idx;
+
+      const letter = document.createElement("span");
+      letter.className = "letter";
+      letter.textContent = String.fromCharCode(65 + idx) + ".";
+      const txt = document.createElement("span");
+      txt.textContent = c[lang];
+
+      btn.appendChild(letter);
+      btn.appendChild(txt);
+
+      btn.onclick = () => {
+        if (btnSubmit.disabled) return;
+        Array.from(optionsDiv.children).forEach(b =>
+          b.classList.remove("selected")
+        );
         btn.classList.add("selected");
       };
+
       optionsDiv.appendChild(btn);
     });
 
-    explanationBox.style.display="none";
-    expBody.textContent="";
+    explanationBox.style.display = "none";
+    expBody.textContent = "";
 
-    const prog=Math.round((currentIndex/TOTAL_PER_SESSION)*100);
-    progressBar.style.width=prog+"%";
+    const prog = Math.round((currentIndex / total) * 100);
+    progressBar.style.width = prog + "%";
 
-    statCorrect.textContent = TEXT.statCorrect[lang]+": "+score;
-    const acc=sessionAnswers.length?Math.round(score/sessionAnswers.length*100):0;
-    statAccuracy.textContent = TEXT.statAccuracy[lang]+": "+acc+"%";
+    statCorrect.textContent = TEXT.statCorrect[lang] + ": " + score;
+    const answered = sessionAnswers.length;
+    const acc = answered ? Math.round(score / answered * 100) : 0;
+    statAccuracy.textContent = TEXT.statAccuracy[lang] + ": " + acc + "%";
   }
 
   // ========= 回答・次へ =========
-  btnSubmit.onclick = () => {
-    const q = sessionQuestions[currentIndex];
-    if (!q) return;
+    btnNext.onclick = () => {
+    const total = sessionQuestions.length || TOTAL_PER_SESSION;
 
-    const selected = Array.from(optionsDiv.children)
-      .find(b => b.classList.contains("selected"));
-    if (!selected) return; // 何も選んでないときは何もしない
+    // まだ残りの問題がある
+    if (currentIndex < total - 1) {
+      currentIndex++;
 
-    const chosen   = Number(selected.dataset.index);
-    const isCorrect = chosen === q.correct;
+      btnSubmit.style.display = "block";
+      btnNext.style.display   = "none";
+      explanationBox.style.display = "none";
 
-    try {
-      // スコア更新
-      if (isCorrect) {
-        score++;
-        currentStreak++;
-        if (currentStreak > bestStreak) bestStreak = currentStreak;
-      } else {
-        currentStreak = 0;
-      }
+      renderQuestion();
 
-      // 回答記録
-      sessionAnswers.push({
-        index: currentIndex,
-        chosen,
-        correct: q.correct,
-        id: q.id
-      });
-
-      // 正解・不正解の色付け
-      Array.from(optionsDiv.children).forEach((b, idx) => {
-        b.onclick = null; // もう選び直せないように
-        if (idx === q.correct) b.classList.add("correct");
-        if (idx === chosen && idx !== q.correct) b.classList.add("wrong");
-      });
-
-      // 正解 / 不正解の小さいラベル
-      const tag = document.createElement("span");
-      tag.className = "state-tag";
-      tag.textContent = isCorrect
-        ? TEXT.correctLabel[lang]
-        : TEXT.wrongLabel[lang];
-      selected.appendChild(tag);
-
-      // 解説表示（言語がなかったときも落ちないようにガード）
-      explanationBox.style.display = "block";
-      expTitle.textContent = TEXT.expTitle[lang];
-      const explanation =
-        q.exp && (q.exp[lang] || q.exp.ja || q.exp.en) || "";
-      expBody.textContent = explanation;
-
-      // ステータス更新
-      statCorrect.textContent =
-        TEXT.statCorrect[lang] + ": " + score;
-      const acc = Math.round(score / sessionAnswers.length * 100);
-      statAccuracy.textContent =
-        TEXT.statAccuracy[lang] + ": " + acc + "%";
-    } finally {
-      // 万が一どこかでエラーが出ても、
-      // 必ず「次の問題へ」ボタンは出す
-      btnSubmit.style.display = "none";
-      btnNext.style.display   = "block";
+      // スマホで必ず問題文が見えるように一番上へスクロール
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } else {
+      // 最後の問題だった → 結果画面へ
+      finishSession();
     }
   };
 
